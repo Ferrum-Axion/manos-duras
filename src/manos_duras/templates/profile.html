@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <h1>{{ user_recieved_dict.name }}</h1>
+  <p>Age: {{ user_recieved_dict.age }}</p>
+  <ul>
+    {% for skill in user_recieved_dict.skills %}
+      <li>{{ skill }}</li>
+    {% endfor %}
+  </ul>
+</body>
+</html>
