@@ -1,13 +1,11 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
-from flask_bootstrap import Bootstrap
 
 app = Flask(__name__)
-bootstrap = Bootstrap(app)
 
 # Connection string: postgresql://user:password@host:port/dbname
 app.config['SQLALCHEMY_DATABASE_URI'] = (
-    'postgresql://flaskuser:flaskpass@localhost:5432/flaskdb'
+    'postgresql://flaskuser:flaskpass@127.0.0.1:5432/flaskdb?sslmode=disable'
 )
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'change-me-in-production'
