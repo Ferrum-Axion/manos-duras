@@ -12,8 +12,6 @@ set -o nounset
 # Variables
 APP_IMAGE="manos_duras_img"
 DB_IMAGE="manos_duras_postgres_img"
-APP_CONTAINER="manos_duras_app"
-DB_CONTAINER="manos_duras_db"
 NETWORK="manos-duras-vnet"
 
 DB_NAME="flaskdb"
@@ -45,15 +43,6 @@ check_docker_permission(){
     fi
 }
 
-# append nessecry files into dockerignore
-append_to_dockerignore(){
-    echo "Appending necessary files to .dockerignore..."
-    {
-        echo "*.md"
-        echo ".gitignore"
-        echo ".git"
-        echo "build.sh"
-    } > .dockerignore
 
 # Create a docker network
 create_docker_network(){
@@ -66,6 +55,30 @@ create_docker_network(){
     fi
 }
 
-# Creating python app image
-echo "Building the flask application image..."
+# Build the Docker images for both the app and the database
+build_images(){
+    echo "Building Postgres image (${DB_IMAGE})..."
+    docker build -f Dockerfile.db -t "${DB_IMAGE}" .
 
+    echo "Building App image (${APP_IMAGE})..."
+    docker build -f Dockerfile.app -t "${APP_IMAGE}" .
+}
+
+# Run the containers for both the app and the database
+run_containers(){
+    echo "Running Postgres container..."
+    docker run -d --name manos_duras_postgres --network $NETWORK -p ${DB_PORT}:5432 $DB_IMAGE
+
+    echo "Running App container..."
+    docker run -d --name manos_duras_app --network $NETWORK -p ${APP_PORT}:8000 $APP_IMAGE
+}
+
+main(){
+    docker_installed
+    check_docker_permission
+    create_docker_network
+    build_images
+    run_containers
+}
+
+main
