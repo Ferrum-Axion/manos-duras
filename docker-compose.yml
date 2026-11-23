@@ -1,0 +1,39 @@
+services:
+  db:
+    image: postgres:16
+    volumes:
+      - ./:/app
+    ports:
+      - 5432:5432
+    env_file:
+      - ./.env
+    secrets:
+     - db_password
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $PG_ADMIN -d $PG_DATABASE"]
+      retries: 5
+      timeout: 1s
+      interval: 2s
+      start_period: 3s
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+  worker:
+    image: nginx:latest
+    volumes:
+      - ./src:/app
+    healthcheck:
+      test: ["CMD-SHELL", "curl -L  http://0.0.0.0:80"]
+      retries: 5
+      timeout: 1s
+      interval: 2s
+      start_period: 3s
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+
+secrets:
+  db_password:
+     file: ./src/db_password.txt
